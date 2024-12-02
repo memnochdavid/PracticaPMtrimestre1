@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">PracticaPMtrimestre1</string>
+    <string name="title_activity_menu">Menu</string>
+    <string name="motivo">Práctica PM Trimestre 1</string>
+    <string name="autor">David Duque Díaz</string>
+    <string name="memotron">MemoTron</string>
+    <string name="calcutron">CalcuTron</string>
+    <string name="title_activity_memo_tron">MemoTron</string>
+    <string name="title_activity_calcu_tron">CalcuTron</string>
+
+</resources>
