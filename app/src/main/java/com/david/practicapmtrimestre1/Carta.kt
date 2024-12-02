@@ -2,18 +2,14 @@ package com.david.practicapmtrimestre1
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,28 +42,52 @@ val baraja= mutableListOf<Carta>(
 
 @Composable
 fun MuestraCarta(carta: Carta) {
-    var isFlipped by remember { mutableStateOf(carta.volteada) } // State to track flipped state
+    var volteada by remember { mutableStateOf(carta.volteada) }
+    var indice=0
 
     Image(
-        painter = painterResource(id = if (isFlipped) carta.img else carta.dorso),
+        painter = painterResource(id = if (volteada) carta.img else carta.dorso),
         contentDescription = "",
         modifier = Modifier
             .fillMaxSize()
             .padding(7.dp)
             .clickable {
-                isFlipped = !isFlipped // Toggle flipped state on click
-                carta.volteada = !carta.volteada
+                if (volteadas.size == 0) {
+                    volteada = !volteada
+                    volteadas.add(carta)
+                    carta.volteada = !carta.volteada
+                } else {
+                    if (volteadas[indice].numero == carta.numero) {
+                        volteada = !volteada
+                        carta.volteada = !carta.volteada
+                        volteadas.add(carta)
+                        indice++
+                    } else if (volteadas[indice].numero != carta.numero) {
+                        volteada = !volteada
+                        volteadas = mutableListOf<Carta>()
+                        indice = 0
+                        vidas--
+                        carta.volteada = !carta.volteada
+                    }
+                }
             }
     )
 }
 
 @Composable
-fun MuestraBaraja() {
+fun MuestraBaraja(mazo: MutableList<Carta>) {
+    //var volteadas by remember { mutableStateOf(mutableListOf<Carta>()) }
+    var currentVidas by remember { mutableStateOf(vidas) } // Track vidas state
+
+
+    // Trigger desvolteaTodasLasCartas when vidas changes
+
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         modifier = Modifier.wrapContentSize()
     ) {
-        items(mazoBarajado()) { carta ->
+        items(mazo) { carta ->
             MuestraCarta(carta)
         }
     }

@@ -16,6 +16,10 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -23,6 +27,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.david.practicapmtrimestre1.ui.theme.PracticaPMtrimestre1Theme
+
+var vidas by mutableStateOf<Int>(5)
+var volteadas by mutableStateOf(mutableListOf<Carta>())
+var mazo by mutableStateOf(mutableListOf<Carta>())
+
 
 class MemoTron : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,25 +47,34 @@ class MemoTron : ComponentActivity() {
 
 @Composable
 fun Mesa() {
-    Row(
+    ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(R.color.tapete)),
-        verticalAlignment = Alignment.CenterVertically,
+            .background(colorResource(R.color.tapete))
     ){
+        val (fila1, fila2, fila3) = createRefs()
         Row(
             modifier = Modifier
                 .wrapContentSize()
-                .padding(all = 20.dp),
+                .padding(all = 20.dp)
+                .constrainAs(fila1) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(fila2.top)
+                }
         ){
-            MuestraBaraja()
+            mazo= mazoBarajado()
+            MuestraBaraja(mazo)
         }
         Row(
             modifier = Modifier
                 .wrapContentSize()
-                .padding(all = 20.dp),
+                .padding(all = 20.dp)
+                .constrainAs(fila2) {
+                    top.linkTo(fila1.bottom)
+                    bottom.linkTo(parent.bottom)
+                }
         ){
-            Text("")
+            Text("Vidas: $vidas")
         }
     }
 }
