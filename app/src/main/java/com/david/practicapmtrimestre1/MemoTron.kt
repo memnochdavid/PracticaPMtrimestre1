@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -54,105 +55,109 @@ class MemoTron : ComponentActivity() {
 
 @Composable
 fun Mesa() {
-
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(R.color.tapete))
     ){
         val (fila1, fila2, fila3) = createRefs()
-        Row(
-            modifier = Modifier
-                .wrapContentSize()
-                .padding(all = 20.dp)
-                .constrainAs(fila1) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(fila2.top)
-                }
-        ){
-            if(vidas>0){
+        if(vidas>0){
+            Row(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(all = 20.dp)
+                    .constrainAs(fila1) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(fila2.top)
+                    },
+                verticalAlignment = Alignment.CenterVertically,
+            ){
                 MuestraBaraja(mazo)
             }
-            else{
+            Row(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(all = 20.dp)
+                    .constrainAs(fila2) {
+                        top.linkTo(fila1.bottom)
+                        bottom.linkTo(parent.bottom)
+                    },
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+
+            ){
                 Column(
                     modifier = Modifier
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                        .wrapContentSize()
+                        .weight(0.5f)
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .weight(0.8f)
-                    ){
-                        HasPerdido()
-                    }
-                    Row(
-                        modifier = Modifier
-                            .weight(0.2f)
-                    ){
-                        Button(onClick = {
-                            vidas=5
-                            volteadas.forEachIndexed { index, _ ->
-                                if(volteadas.size>0){
-                                    volteadas[index] = false
-                                }
-                            }
-                            mazo=mazoBarajado().toMutableList()
-                        }) {
-                            Text("Comenzar")
-                        }
-                    }
-
+                    Text(text="Vidas: $vidas", fontSize = 20.sp, color = colorResource(R.color.white))
                 }
+                Column(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .weight(0.5f)
+                ) {
+                    Button(onClick = {
+                        vidas=5
+                        volteadas.forEachIndexed { index, _ ->
+                            if(volteadas.size>0){
+                                volteadas[index] = false
+                            }
+                        }
+                        mazo=mazoBarajado().toMutableList()
+                    }) {
+                        Text("Comenzar")
+                    }
+                }
+
+
             }
         }
-        Row(
-            modifier = Modifier
-                .wrapContentSize()
-                .padding(all = 20.dp)
-                .constrainAs(fila2) {
-                    top.linkTo(fila1.bottom)
-                    bottom.linkTo(parent.bottom)
-                },
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-
-        ){
+        else{
             Column(
                 modifier = Modifier
-                    .wrapContentSize()
-                    .weight(0.5f)
+                    .fillMaxWidth()
+                    .constrainAs(fila3) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    },
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Bottom
             ) {
-                Text(text="Vidas: $vidas", fontSize = 20.sp, color = colorResource(R.color.white))
-            }
-            Column(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .weight(0.5f)
-            ) {
-                Button(onClick = {
-                    vidas=5
-                    volteadas.forEachIndexed { index, _ ->
-                        if(volteadas.size>0){
-                            volteadas[index] = false
+                Row(
+                    modifier = Modifier
+                        .wrapContentSize()
+                ){
+                    HasPerdido()
+                }
+                Row(
+                    modifier = Modifier
+                        .wrapContentSize()
+                ){
+                    Button(onClick = {
+                        vidas=5
+                        volteadas.forEachIndexed { index, _ ->
+                            if(volteadas.size>0){
+                                volteadas[index] = false
+                            }
                         }
+                        mazo=mazoBarajado().toMutableList()
+                    }) {
+                        Text("Reiniciar")
                     }
-                    mazo=mazoBarajado().toMutableList()
-                }) {
-                    Text("Comenzar")
                 }
             }
-
         }
     }
 }
-
 
 @Composable
 fun HasPerdido(){
     Image(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxWidth()
+            .fillMaxHeight(0.8f),
         contentDescription = "",
         painter = painterResource(id=R.drawable.lose)
     )

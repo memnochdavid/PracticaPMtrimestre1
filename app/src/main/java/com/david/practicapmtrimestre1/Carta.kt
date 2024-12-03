@@ -2,6 +2,8 @@ package com.david.practicapmtrimestre1
 
 import android.util.Log
 import androidx.activity.result.launch
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
@@ -19,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -54,6 +57,12 @@ var seleccionada by mutableStateOf<Carta?>(null)
 
 @Composable
 fun MuestraCarta(carta: Carta, index: Int) {
+    var rotated by remember { mutableStateOf(false) }
+
+    val rotation by animateFloatAsState(
+        targetValue = if (rotated) 180f else 0f,
+        animationSpec = tween(500)
+    )
 
     LaunchedEffect(key1 = vidas) {
         delay(500)
@@ -70,24 +79,27 @@ fun MuestraCarta(carta: Carta, index: Int) {
         modifier = Modifier
             .size(130.dp)
             .padding(7.dp)
+            .graphicsLayer {
+                rotationY = rotation
+                cameraDistance = 8 * density
+            }
             .clickable {
                 if (seleccionada == null) {
                     seleccionada = carta
                     volteadas[index] = true
-                }
-                else {
-                    if (seleccionada!!.numero == carta.numero && vidas>0) {
+                } else {
+                    if (seleccionada!!.numero == carta.numero && vidas > 0) {
                         volteadas[index] = true
                         seleccionada = null
-                    }
-                    else {
-                        if (vidas>0) {
+                    } else {
+                        if (vidas > 0) {
                             volteadas[index] = true
                             seleccionada = null
                             vidas--
                         }
                     }
                 }
+                rotated = !rotated
             }
     )
 }
