@@ -24,8 +24,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.david.practicapmtrimestre1.ui.theme.PracticaPMtrimestre1Theme
 
 var vidas by mutableStateOf<Int>(5)
-var mazo by mutableStateOf(mazoBarajado())
-//var volteadas by mutableStateOf(mutableListOf<Carta>())
+var mazo by mutableStateOf(mutableListOf<Carta>())
 
 
 class MemoTron : ComponentActivity() {
@@ -72,9 +71,9 @@ fun Mesa() {
             Text("Vidas: $vidas")
             Button(onClick = {
                 vidas=5
-                mazo=mazoBarajado()
+                mazo=mazoBarajado().toMutableList()
             }) {
-                Text("Reiniciar")
+                Text("Comenzar")
 
             }
         }

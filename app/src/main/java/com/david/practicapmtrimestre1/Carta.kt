@@ -24,6 +24,7 @@ data class Carta(
     var img: Int,
     val dorso: Int =R.drawable.dorso,
 )
+//global
 
 val baraja= mutableListOf<Carta>(
     Carta(1,R.drawable.bra),
@@ -39,23 +40,11 @@ val baraja= mutableListOf<Carta>(
     Carta(5,R.drawable.videl),
     Carta(6,R.drawable.zangya)
 )
-
-//global
-var volteadas =mutableListOf<Carta>()
-var turno=0
+var volteadas = MutableList(12) { false }
 
 @Composable
 fun MuestraCarta(carta: Carta, index: Int) {
-    var volteada by remember { mutableStateOf(false) }
-    var vidasState by remember { mutableStateOf(vidas) }
-    var indice=0
-
-    LaunchedEffect(key1= volteadas, key2 = vidasState) {
-        if(volteadas.size==0 && turno%2==0){
-            delay(500)
-            volteada=false
-        }
-    }
+    var volteada by remember { mutableStateOf(volteadas[index]) }
 
     Image(
         painter = painterResource(id = if (volteada) carta.img else carta.dorso),
@@ -64,25 +53,10 @@ fun MuestraCarta(carta: Carta, index: Int) {
             .size(130.dp)
             .padding(7.dp)
             .clickable {
-                if (!volteada) {
-                    if (volteadas.size == 0) {
-                        volteada = !volteada
-                        volteadas.add(carta)
-                        turno++
-                    } else {
-                        if (volteadas[indice].numero == carta.numero) {
-                            volteada = !volteada
-                            volteadas.add(carta)
-                            indice++
-                            turno++
-                        } else if (volteadas[indice].numero != carta.numero) {
-                            volteada = !volteada
-                            volteadas = mutableListOf<Carta>()
-                            indice = 0
-                            vidas--
-                            turno++
-                        }
-                    }
+                if (!volteadas[index]) {
+                    volteadas[index] = true
+                    volteada=true
+
                 }
 
             }
