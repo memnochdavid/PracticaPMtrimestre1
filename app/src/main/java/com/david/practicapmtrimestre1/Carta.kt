@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -49,12 +50,11 @@ val baraja= mutableListOf<Carta>(
     Carta(6,R.drawable.zangya)
 )
 
+var seleccionada by mutableStateOf<Carta?>(null)
 
 @Composable
 fun MuestraCarta(carta: Carta, index: Int) {
-    var seleccionada by remember { mutableStateOf<Carta?>(null) }
-    val lifecycleScope = rememberCoroutineScope()
-    var turno=0
+
     LaunchedEffect(key1 = vidas) {
         delay(500)
         if (volteadas.isNotEmpty()) {
@@ -71,25 +71,23 @@ fun MuestraCarta(carta: Carta, index: Int) {
             .size(130.dp)
             .padding(7.dp)
             .clickable {
-                //lifecycleScope.launch {
-                    //if (!volteadas[index]) {//si no esta volteada
-                        if (seleccionada == null) {
-                            seleccionada = carta
+                if (seleccionada == null) {
+                    seleccionada = carta
+                    volteadas[index] = true
+                }
+                else {
+                    if (seleccionada!!.numero == carta.numero && vidas>0) {
+                        volteadas[index] = true
+                        seleccionada = null
+                    }
+                    else {
+                        if (vidas>0) {
                             volteadas[index] = true
-                        } else {
-                            if (seleccionada!!.numero == carta.numero) {
-                                volteadas[index] = true
-                                seleccionada = null
-                            }
-                            else {
-                                volteadas[index] = true
-                                seleccionada = null
-                                //delay(300)
-                                vidas--
-                            }
+                            seleccionada = null
+                            vidas--
                         }
-                    //}
-                //}
+                    }
+                }
             }
     )
 }
