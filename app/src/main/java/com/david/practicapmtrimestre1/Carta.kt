@@ -2,12 +2,12 @@ package com.david.practicapmtrimestre1
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,12 +17,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 
 data class Carta(
     var numero: Int,
     var img: Int,
     val dorso: Int =R.drawable.dorso,
-    var volteada: Boolean = false
 )
 
 val baraja= mutableListOf<Carta>(
@@ -40,61 +40,70 @@ val baraja= mutableListOf<Carta>(
     Carta(6,R.drawable.zangya)
 )
 
+//global
+var volteadas =mutableListOf<Carta>()
+var turno=0
+
 @Composable
-fun MuestraCarta(carta: Carta) {
-    var volteada by remember { mutableStateOf(carta.volteada) }
+fun MuestraCarta(carta: Carta, index: Int) {
+    var volteada by remember { mutableStateOf(false) }
+    var vidasState by remember { mutableStateOf(vidas) }
     var indice=0
+
+    LaunchedEffect(key1= volteadas, key2 = vidasState) {
+        if(volteadas.size==0 && turno%2==0){
+            delay(500)
+            volteada=false
+        }
+    }
 
     Image(
         painter = painterResource(id = if (volteada) carta.img else carta.dorso),
         contentDescription = "",
         modifier = Modifier
-            .fillMaxSize()
+            .size(130.dp)
             .padding(7.dp)
             .clickable {
-                if (volteadas.size == 0) {
-                    volteada = !volteada
-                    volteadas.add(carta)
-                    carta.volteada = !carta.volteada
-                } else {
-                    if (volteadas[indice].numero == carta.numero) {
+                if (!volteada) {
+                    if (volteadas.size == 0) {
                         volteada = !volteada
-                        carta.volteada = !carta.volteada
                         volteadas.add(carta)
-                        indice++
-                    } else if (volteadas[indice].numero != carta.numero) {
-                        volteada = !volteada
-                        volteadas = mutableListOf<Carta>()
-                        indice = 0
-                        vidas--
-                        carta.volteada = !carta.volteada
+                        turno++
+                    } else {
+                        if (volteadas[indice].numero == carta.numero) {
+                            volteada = !volteada
+                            volteadas.add(carta)
+                            indice++
+                            turno++
+                        } else if (volteadas[indice].numero != carta.numero) {
+                            volteada = !volteada
+                            volteadas = mutableListOf<Carta>()
+                            indice = 0
+                            vidas--
+                            turno++
+                        }
                     }
                 }
+
             }
     )
 }
-
 @Composable
-fun MuestraBaraja(mazo: MutableList<Carta>) {
-    //var volteadas by remember { mutableStateOf(mutableListOf<Carta>()) }
-    var currentVidas by remember { mutableStateOf(vidas) } // Track vidas state
-
-
-    // Trigger desvolteaTodasLasCartas when vidas changes
+fun MuestraBaraja(mazo: List<Carta>) {
 
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         modifier = Modifier.wrapContentSize()
     ) {
-        items(mazo) { carta ->
-            MuestraCarta(carta)
+        itemsIndexed(mazo) { index, carta ->
+            MuestraCarta(carta, index)
         }
     }
 }
 
 
-fun mazoBarajado(): MutableList<Carta>{
-    baraja.shuffle()
-    return baraja
+fun mazoBarajado(): List<Carta> {
+    return baraja.shuffled()
 }
+
