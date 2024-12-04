@@ -332,11 +332,14 @@ fun OperacionActual(){
 
 
 
-/*
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewCalcuTron() {
+    lateinit var settingsDataStore: SettingsDataStore
+    val context = LocalContext.current
+    settingsDataStore = SettingsDataStore(context)
     PracticaPMtrimestre1Theme {
-        CalcuTronUI()
+        CalcuTronUI(settingsDataStore)
     }
-}*/
+}
