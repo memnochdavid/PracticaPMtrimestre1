@@ -30,6 +30,7 @@ fun Teclado(){
     ConstraintLayout(
         modifier = Modifier
             .padding(all = 2.dp)
+            .wrapContentSize()
     ) {
         val (siete, ocho, nueve, ce, cuatro, cinco, seis,igual,uno,dos,tres,cero,c) = createRefs()
         val colores:ButtonColors=ButtonDefaults.buttonColors(
@@ -96,7 +97,7 @@ fun Teclado(){
                 },
             shape = RoundedCornerShape(4.dp),
             colors = colores
-        ){Text(text = "CE", fontSize = 10.sp, color = colorTexto)}
+        ){Text(text = "CE", fontSize = 9.sp, color = colorTexto)}
         Button(
             onClick = {
                 escribe+="4"
@@ -136,7 +137,7 @@ fun Teclado(){
                 .constrainAs(seis) {
                     start.linkTo(cinco.end)
                     end.linkTo(igual.start)
-                    top.linkTo(nueve.bottom)
+                    top.linkTo(igual.top)
                     bottom.linkTo(tres.top)
                 },
             shape = RoundedCornerShape(4.dp),
@@ -147,11 +148,11 @@ fun Teclado(){
                 escribe+="="
             },modifier = Modifier
                 .fillMaxHeight()
-                .padding(all = 1.dp)
+                .padding(horizontal = 1.dp, vertical = 5.dp)
                 .constrainAs(igual) {
                     start.linkTo(seis.end)
                     end.linkTo(parent.end)
-                    top.linkTo(seis.top)
+                    top.linkTo(ce.bottom)
                     bottom.linkTo(c.bottom)
                     height = Dimension.fillToConstraints
                 },
@@ -229,7 +230,7 @@ fun Teclado(){
                     start.linkTo(cero.end)
                     end.linkTo(igual.start)
                     top.linkTo(dos.bottom)
-                    bottom.linkTo(parent.bottom)
+                    bottom.linkTo(igual.bottom)
                 },
             shape = RoundedCornerShape(4.dp),
             colors = colores
