@@ -1,6 +1,7 @@
 package com.david.practicapmtrimestre1
 
 import android.content.Context
+import androidx.activity.result.launch
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -8,69 +9,49 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+//val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class SettingsDataStore(private val context: Context) {
 
-    companion object {
-        val COUNTDOWN_DURATION = intPreferencesKey("cuenta_atras_dur")
-        val ANIMATION_ENABLED = booleanPreferencesKey("animacion")
-        val OPERATORS = stringPreferencesKey("operaciones")
-        val MAX_OPERATOR_VALUE = intPreferencesKey("max_operador_valor")
-        val MIN_OPERATOR_VALUE = intPreferencesKey("min_operador_valor")
+    private val sharedPrefs = context.getSharedPreferences("preferencias", Context.MODE_PRIVATE)
+
+    val countdownDuration: Int
+        get() = sharedPrefs.getInt("cuenta_atras_dur", 20)
+
+    val animationEnabled: Boolean
+        get() = sharedPrefs.getBoolean("animacion", false)
+
+    val operators: String
+        get() = sharedPrefs.getString("operaciones", "+,-") ?: "+,-"
+
+    val maxOperatorValue: Int
+        get() = sharedPrefs.getInt("max_operador_valor", 10)
+
+    val minOperatorValue: Int
+        get() = sharedPrefs.getInt("min_operador_valor", 1)
+
+
+    fun updateCountdownDuration(duration: Int) {
+        sharedPrefs.edit().putInt("cuenta_atras_dur", duration).apply()
     }
 
-    val countdownDuration: Flow<Int> = context.dataStore.data.map { preferences ->
-        preferences[COUNTDOWN_DURATION] ?: 20
+    fun updateAnimationEnabled(enabled: Boolean) {
+        sharedPrefs.edit().putBoolean("animacion", enabled).apply()
     }
 
-    val animationEnabled: Flow<Boolean> = context.dataStore.data.map { preferences ->
-        preferences[ANIMATION_ENABLED] ?: false
+    fun updateOperators(operators: String) {
+        sharedPrefs.edit().putString("operaciones", operators).apply()
     }
 
-    val operators: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[OPERATORS] ?: "+,-"
+    fun updateMaxOperatorValue(value: Int) {
+        sharedPrefs.edit().putInt("max_operador_valor", value).apply()
     }
 
-
-
-    val maxOperatorValue: Flow<Int> = context.dataStore.data.map { preferences ->
-        preferences[MAX_OPERATOR_VALUE] ?: 10
-    }
-    val minOperatorValue: Flow<Int> = context.dataStore.data.map { preferences ->
-        preferences[MIN_OPERATOR_VALUE] ?: 10
-    }
-
-
-    suspend fun updateCountdownDuration(duration: Int) {
-        context.dataStore.edit { preferences ->
-            preferences[COUNTDOWN_DURATION] = duration
-        }
-    }
-
-    suspend fun updateAnimationEnabled(enabled: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[ANIMATION_ENABLED] = enabled
-        }
-    }
-
-    suspend fun updateOperators(operators: String) {
-        context.dataStore.edit { preferences ->
-            preferences[OPERATORS] = operators
-        }
-    }
-
-    suspend fun updateMaxOperatorValue(value: Int) {
-        context.dataStore.edit { preferences ->
-            preferences[MAX_OPERATOR_VALUE] = value
-        }
-    }
-    suspend fun updateMinOperatorValue(value: Int) {
-        context.dataStore.edit { preferences ->
-            preferences[MIN_OPERATOR_VALUE] = value
-        }
+    fun updateMinOperatorValue(value: Int) {
+        sharedPrefs.edit().putInt("min_operador_valor", value).apply()
     }
 }

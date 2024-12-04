@@ -57,10 +57,13 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
 import com.david.practicapmtrimestre1.ui.theme.PracticaPMtrimestre1Theme
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
 
 class CalcuTronOpc : ComponentActivity() {
+    private lateinit var settingsDataStore: SettingsDataStore
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        settingsDataStore = SettingsDataStore(this)
         val settingsDataStore = SettingsDataStore(this)
         enableEdgeToEdge()
         setContent {
@@ -88,6 +91,7 @@ fun Opciones(settingsDataStore: SettingsDataStore) {
         settingsDataStore.animationEnabled.collect { animationEnabled = it }
         settingsDataStore.operators.collect { operators = it }
         settingsDataStore.maxOperatorValue.collect { maxOperatorValue = it }
+        settingsDataStore.minOperatorValue.collect { minOperatorValue = it }
     }
 
     //AQUÍ LA IU
@@ -329,7 +333,7 @@ fun Operaciones(coloresCheckbox: CheckboxColors){
         Checkbox(
             checked = false,
             onCheckedChange = { isChecked ->
-                operators = isChecked
+                //operators = isChecked
             },
             colors = coloresCheckbox
         )
