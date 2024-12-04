@@ -79,13 +79,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.CoroutineScope
+import kotlin.text.split
 
 class CalcuTronOpc : ComponentActivity() {
     private lateinit var settingsDataStore: SettingsDataStore
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         settingsDataStore = SettingsDataStore(this)
-        val settingsDataStore = SettingsDataStore(this)
         enableEdgeToEdge()
         setContent {
             PracticaPMtrimestre1Theme {
@@ -95,20 +96,13 @@ class CalcuTronOpc : ComponentActivity() {
     }
 }
 
-var countdownDuration by mutableIntStateOf(20)
-var animationEnabled by mutableStateOf(false)
-var operators by mutableStateOf("+,-,*")
-var maxOperatorValue by mutableIntStateOf(10)
-var minOperatorValue by mutableIntStateOf(1)
 
-var listaOperaciones by mutableStateOf(listOf<String>())
-var opcionesAnimaciones by mutableStateOf(listOf<String>())
 
 
 @Composable
 fun Opciones(settingsDataStore: SettingsDataStore) {
     val lifecycleScope = rememberCoroutineScope()
-
+/*
     LaunchedEffect(Unit) {
         countdownDuration= settingsDataStore.countdownDuration
         animationEnabled = settingsDataStore.animationEnabled
@@ -118,8 +112,9 @@ fun Opciones(settingsDataStore: SettingsDataStore) {
         //listas
         listaOperaciones = operators.split(",")
         opcionesAnimaciones= listOf("Activado", "Desactivado")
+        preferenciasCargadas = true
     }
-
+*/
     //AQUÍ LA IU
     OpcionesUI(lifecycleScope,settingsDataStore)
 
@@ -129,6 +124,7 @@ fun Opciones(settingsDataStore: SettingsDataStore) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OpcionesUI(lifecycleScope: CoroutineScope,settingsDataStore: SettingsDataStore){
+    val context = LocalContext.current
 
     val coloresTextInput: TextFieldColors = OutlinedTextFieldDefaults.colors(
         focusedBorderColor = colorResource(R.color.black),
@@ -227,7 +223,7 @@ fun OpcionesUI(lifecycleScope: CoroutineScope,settingsDataStore: SettingsDataSto
             horizontalArrangement = Arrangement.Center
         ){
             //checkboxes
-            Operaciones(coloresCheckbox)
+            Operaciones(coloresCheckbox,settingsDataStore)
         }
         Row(
             modifier = Modifier
@@ -252,7 +248,7 @@ fun OpcionesUI(lifecycleScope: CoroutineScope,settingsDataStore: SettingsDataSto
             horizontalArrangement = Arrangement.Center
         ){
             //spinner
-            Animaciones(coloresSpinner)
+            Animaciones(coloresSpinner,settingsDataStore)
         }
         Row(
             modifier = Modifier
@@ -273,6 +269,10 @@ fun OpcionesUI(lifecycleScope: CoroutineScope,settingsDataStore: SettingsDataSto
                         settingsDataStore.updateOperators(operators)
                         settingsDataStore.updateMaxOperatorValue(maxOperatorValue)
                         settingsDataStore.updateMinOperatorValue(minOperatorValue)
+                        //se reinicia el contador al salir de las opciones
+                        countdownDuration= settingsDataStore.countdownDuration
+                        (context as CalcuTronOpc).finish()
+
                     }
                 },
                 colors = coloresBoton,
@@ -392,9 +392,9 @@ fun MaxMinoOperador(coloresTextInput: TextFieldColors){
     }
 }
 @Composable
-fun Operaciones(coloresCheckbox: CheckboxColors){
-    //borrar
-    listaOperaciones = operators.split(",")
+fun Operaciones(coloresCheckbox: CheckboxColors, settingsDataStore: SettingsDataStore){
+    val coroutineScope = rememberCoroutineScope()
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -402,26 +402,42 @@ fun Operaciones(coloresCheckbox: CheckboxColors){
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
-        var operacionTexto=""
-        for (operacion in listaOperaciones) {
-            when (operacion) {
-                "+" -> operacionTexto = "Suma"
-                "-" -> operacionTexto = "Resta"
-                "*" -> operacionTexto = "Multi"
-            }
-            Checkbox(
-                checked = operators.contains(operacion),
-                onCheckedChange = { isChecked ->
-                    if (isChecked) {
-                        listaOperaciones += ",$operacion"
-                    } else {
-                        listaOperaciones = listaOperaciones.filter { it != operacion }
-                    }
-                },
-                colors = coloresCheckbox
-            )
-            Text(operacionTexto, fontSize = 13.sp,modifier = Modifier.padding(end = 10.dp))
-        }
+        Checkbox(
+            checked = operators.contains("+"),
+            onCheckedChange = { isChecked ->
+                operators = updateOperators(operators, "+", isChecked)
+                listaOperaciones = operators.split(",")
+                coroutineScope.launch {
+                    settingsDataStore.updateOperators(operators)
+                }
+            },
+            colors = coloresCheckbox
+        )
+        Text("Suma", fontSize = 13.sp, modifier = Modifier.padding(end = 10.dp))
+        Checkbox(
+            checked = operators.contains("-"),
+            onCheckedChange = { isChecked ->
+                operators = updateOperators(operators, "-", isChecked)
+                listaOperaciones = operators.split(",")
+                coroutineScope.launch {
+                    settingsDataStore.updateOperators(operators)
+                }
+            },
+            colors = coloresCheckbox
+        )
+        Text("Resta", fontSize = 13.sp, modifier = Modifier.padding(end = 10.dp))
+        Checkbox(
+            checked = operators.contains("*"),
+            onCheckedChange = { isChecked ->
+                operators = updateOperators(operators, "*", isChecked)
+                listaOperaciones = operators.split(",")
+                coroutineScope.launch {
+                    settingsDataStore.updateOperators(operators)
+                }
+            },
+            colors = coloresCheckbox
+        )
+        Text("Multiplicación", fontSize = 13.sp, modifier = Modifier.padding(end = 10.dp))
 
 
 
@@ -430,7 +446,8 @@ fun Operaciones(coloresCheckbox: CheckboxColors){
 
 @ExperimentalMaterial3Api
 @Composable
-fun Animaciones(coloresSpinner: TextFieldColors) {
+fun Animaciones(coloresSpinner: TextFieldColors, settingsDataStore: SettingsDataStore) {
+    val coroutineScope = rememberCoroutineScope()
     val animationOptions = listOf("Activado", "Desactivado")
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf(animationOptions[0]) }
@@ -458,6 +475,14 @@ fun Animaciones(coloresSpinner: TextFieldColors) {
                     onClick = {
                         selectedOption = option
                         expanded = false
+
+                        // Actualiza animationEnabled
+                        animationEnabled = option == "Activado"
+
+                        // Guarda el nuevo valor en SharedPreferences
+                        coroutineScope.launch {
+                            settingsDataStore.updateAnimationEnabled(animationEnabled)
+                        }
                     }
                 )
             }
@@ -466,10 +491,17 @@ fun Animaciones(coloresSpinner: TextFieldColors) {
 }
 
 
-
-
-
-
+fun updateOperators(operators: String, operacion: String, isChecked: Boolean): String {
+    return if (isChecked) {
+        if (!operators.contains(operacion)) {
+            if (operators.isEmpty()) operacion else "$operators,$operacion"
+        } else {
+            operators
+        }
+    } else {
+        operators.replace(",$operacion", "").replace(operacion, "")
+    }
+}
 
 
 

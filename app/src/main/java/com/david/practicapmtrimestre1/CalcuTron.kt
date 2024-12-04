@@ -44,6 +44,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -53,6 +54,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
+
+var countdownDuration by mutableIntStateOf(20)
+var animationEnabled by mutableStateOf(false)
+var operators by mutableStateOf("")
+var maxOperatorValue by mutableIntStateOf(10)
+var minOperatorValue by mutableIntStateOf(1)
+
+var listaOperaciones by mutableStateOf(listOf<String>())
+var opcionesAnimaciones by mutableStateOf(listOf<String>())
+var preferenciasCargadas by mutableStateOf(false)
+
+
 
 var escribe by mutableStateOf("")
 var confirma by mutableStateOf(false)
@@ -64,23 +77,39 @@ var intentoResultado= mutableIntStateOf(0)
 
 
 
+
 class CalcuTron : ComponentActivity() {
+    private lateinit var settingsDataStore: SettingsDataStore
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        operacionesPool+=generaOperacion()//genera la primera operación
+        settingsDataStore = SettingsDataStore(this)
+        val settingsDataStore = SettingsDataStore(this)
+
         //enableEdgeToEdge()
         setContent {
             PracticaPMtrimestre1Theme {
-                CalcuTronUI()
+                CalcuTronUI(settingsDataStore)
             }
         }
     }
 }
 
 @Composable
-fun CalcuTronUI() {
+fun CalcuTronUI(settingsDataStore: SettingsDataStore) {
     val context = LocalContext.current
     var intent= Intent(context, CalcuTronOpc::class.java)
+    operacionesPool+=generaOperacion()//genera la primera operación
+    LaunchedEffect(Unit) {
+        countdownDuration= settingsDataStore.countdownDuration
+        animationEnabled = settingsDataStore.animationEnabled
+        operators = settingsDataStore.operators
+        maxOperatorValue = settingsDataStore.maxOperatorValue
+        minOperatorValue = settingsDataStore.minOperatorValue
+        //listas
+        listaOperaciones = operators.split(",")
+        opcionesAnimaciones= listOf("Activado", "Desactivado")
+        preferenciasCargadas = true
+    }
 
     ConstraintLayout(
         modifier = Modifier
@@ -119,7 +148,7 @@ fun CalcuTronUI() {
             horizontalArrangement = Arrangement.Center
         ){
             //cuenta atrás
-            CuentaAtras()
+            CuentaAtras(settingsDataStore)
         }
         Row(
             modifier = Modifier
@@ -189,17 +218,24 @@ fun CalcuTronUI() {
 
 
 @Composable
-fun CuentaAtras() {
+fun CuentaAtras(settingsDataStore: SettingsDataStore) {
+    val listaColores = listOf(colorResource(R.color.black),colorResource(R.color.magenta), colorResource(R.color.granate), colorResource(R.color.rojo), colorResource(R.color.purple_500))
+    var colorContador by remember { mutableStateOf(listaColores[0]) }
     var remainingTime by remember { mutableIntStateOf(countdownDuration) }
     LaunchedEffect(key1 = remainingTime) {
         if (remainingTime > 0) {
             delay(1000)
             remainingTime--
+            if (settingsDataStore.animationEnabled) {
+                // Cambia el color solo si la animación está habilitada
+                colorContador = listaColores[(listaColores.indexOf(colorContador) + 1) % listaColores.size]
+            }
         }
     }
     Text(
         text = "$remainingTime",
         fontSize = 50.sp,
+        color = colorContador,
         fontWeight = FontWeight.Bold,
     )
 }
@@ -296,11 +332,11 @@ fun OperacionActual(){
 
 
 
-
+/*
 @Preview(showBackground = true)
 @Composable
 fun PreviewCalcuTron() {
     PracticaPMtrimestre1Theme {
         CalcuTronUI()
     }
-}
+}*/

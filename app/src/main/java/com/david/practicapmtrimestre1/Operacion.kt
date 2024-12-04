@@ -1,5 +1,8 @@
 package com.david.practicapmtrimestre1
 
+import androidx.compose.runtime.LaunchedEffect
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 import kotlin.random.Random
 import kotlin.random.nextInt
 
@@ -29,12 +32,14 @@ data class Operacion(
 }
 
 fun generaOperacion():Operacion{
-    var operacion:Operacion
-    //var operador= listaOperaciones[getRandomInt(listaOperaciones.size)-1]
-    var operador= "*"
-    var a = getRandomIntInRange(minOperatorValue, maxOperatorValue)
-    var b = getRandomIntInRange(minOperatorValue, maxOperatorValue)
-    operacion=Operacion(operador,a,b)
+    var operacion=Operacion("",0,0)
+    if(preferenciasCargadas){
+        var operador= listaOperaciones[listaOperaciones.indices.random()]
+        var a = getRandomIntInRange(minOperatorValue, maxOperatorValue)
+        var b = getRandomIntInRange(minOperatorValue, maxOperatorValue)
+        operacion=Operacion(operador,a,b)
+
+    }
     return operacion
 }
 
@@ -42,7 +47,7 @@ fun generaOperacion():Operacion{
 
 
 fun getRandomIntInRange(min: Int, max: Int): Int {
-    require(min < max) { "min must be less than max" }
+    require(min < max) { "" }
     return Random.nextInt(max - min + 1) + min
 }
 fun checkResultado(opracion:Operacion, intento:String):Boolean{
