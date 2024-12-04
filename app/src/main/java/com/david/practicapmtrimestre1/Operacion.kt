@@ -30,7 +30,8 @@ data class Operacion(
 
 fun generaOperacion():Operacion{
     var operacion:Operacion
-    var operador= listaOperaciones[listaOperaciones.indices.random()]
+    //var operador= listaOperaciones[getRandomInt(listaOperaciones.size)-1]
+    var operador= "*"
     var a = getRandomIntInRange(minOperatorValue, maxOperatorValue)
     var b = getRandomIntInRange(minOperatorValue, maxOperatorValue)
     operacion=Operacion(operador,a,b)
@@ -40,18 +41,13 @@ fun generaOperacion():Operacion{
 
 
 
-
-
-
-
-
-
-
-
-fun getRandomInt(max: Int): Int {
-    return Random.nextInt(max)
-}
 fun getRandomIntInRange(min: Int, max: Int): Int {
     require(min < max) { "min must be less than max" }
     return Random.nextInt(max - min + 1) + min
+}
+fun checkResultado(opracion:Operacion, intento:String):Boolean{
+    if(intento.isNotEmpty()){
+        val resInput=intento.toInt()
+        return opracion.res==resInput
+    }else return false
 }

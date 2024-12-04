@@ -20,6 +20,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.david.practicapmtrimestre1.ui.theme.PracticaPMtrimestre1Theme
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -42,16 +43,19 @@ import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
 var escribe by mutableStateOf("")
+var confirma by mutableStateOf(false)
 var historial = mutableStateListOf<Operacion>()
 var operacionesPool = mutableStateListOf<Operacion>()
 var aciertos= mutableIntStateOf(0)
@@ -64,7 +68,7 @@ class CalcuTron : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         operacionesPool+=generaOperacion()//genera la primera operación
-        enableEdgeToEdge()
+        //enableEdgeToEdge()
         setContent {
             PracticaPMtrimestre1Theme {
                 CalcuTronUI()
@@ -224,36 +228,69 @@ fun OperacionActual(){
         unfocusedTextColor= colorResource(R.color.gris),
     )
     var cuenta=operacionesPool.last()
-    Column(
-        modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth(0.5f)
-    ){
-        Text(text = cuenta.toString().dropLast(1), fontSize = 50.sp, fontWeight = FontWeight.Bold)
+
+    LaunchedEffect(key1 = confirma) {
+        if (confirma) {
+            if (checkResultado(cuenta, escribe)) {
+                aciertos.intValue++
+                operacionesPool+=generaOperacion()
+                cuenta=operacionesPool.last()
+                escribe=""
+                confirma=false
+                historial+=cuenta
+            }
+            else{
+                fallos.intValue++
+                operacionesPool+=generaOperacion()
+                cuenta=operacionesPool.last()
+                escribe=""
+                confirma=false
+                historial+=cuenta
+            }
+        }
     }
-    Column(
+
+
+    Row(
         modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth(0.5f)
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+
     ){
+        Text(text = "${cuenta} = ", fontSize = 50.sp, fontWeight = FontWeight.Bold)
         OutlinedTextField(
-            value = "",
+            value = escribe,
             onValueChange = { newValue ->
                 intentoResultado = (newValue.toIntOrNull() ?: intentoResultado) as MutableIntState
             },
             label = { Text(
                 color= colorResource(R.color.black),
-                text="Max. valor")},
+                text="R",
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center)
+
+            },
             modifier = Modifier
                 .padding(vertical = 20.dp)
-                .fillMaxWidth()
+                .size(width = 80.dp, height = 80.dp)
+                //.focusable(false)
                 .background(colorResource(id = R.color.transparente)),
             placeholder = { Text("",style = TextStyle(color = colorResource(id = R.color.white)))},
             shape = RoundedCornerShape(6.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            colors = coloresTextInput
+            colors = coloresTextInput,
+            readOnly = true,
+            textStyle = TextStyle(
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Start
+            )
         )
     }
+
 }
 
 

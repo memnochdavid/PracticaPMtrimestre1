@@ -35,7 +35,7 @@ fun Teclado(){
     ) {
         val (siete, ocho, nueve, ce, cuatro, cinco, seis,igual,uno,dos,tres,cero,c) = createRefs()
         val colores:ButtonColors=ButtonDefaults.buttonColors(
-            containerColor= colorResource(R.color.purple_500),
+            containerColor= colorResource(R.color.magenta),
             contentColor= colorResource(R.color.magenta))
         val colorTexto=colorResource(R.color.white)
 
@@ -86,7 +86,7 @@ fun Teclado(){
         ){Text(text = "9", color = colorTexto)}
         Button(
             onClick = {
-                escribe+=""
+                escribe=""
             },modifier = Modifier
                 .wrapContentSize()
                 .padding(all = 1.dp)
@@ -146,7 +146,7 @@ fun Teclado(){
         ){Text(text = "6", color = colorTexto)}
         Button(
             onClick = {
-                escribe+="="
+                confirma=true
             },modifier = Modifier
                 .fillMaxHeight()
                 .padding(horizontal = 1.dp, vertical = 5.dp)
