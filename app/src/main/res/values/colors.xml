@@ -13,4 +13,5 @@
     <color name="naranja">#FD5527</color>
     <color name="amarillo">#FDC300</color>
     <color name="tapete">#0E7052</color>
+    <color name="transparente">#00000000</color>
 </resources>

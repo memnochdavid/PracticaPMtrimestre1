@@ -92,4 +92,6 @@ dependencies {
     implementation(libs.androidx.runtime.rxjava2)
 
     implementation (libs.androidx.constraintlayout.compose)
+    //prefs
+    implementation(libs.androidx.datastore.preferences)
 }
