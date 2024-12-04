@@ -67,6 +67,8 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.MaterialTheme
@@ -74,6 +76,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.CoroutineScope
 
 class CalcuTronOpc : ComponentActivity() {
     private lateinit var settingsDataStore: SettingsDataStore
@@ -116,25 +120,14 @@ fun Opciones(settingsDataStore: SettingsDataStore) {
     }
 
     //AQUÍ LA IU
-    OpcionesUI()
+    OpcionesUI(lifecycleScope,settingsDataStore)
 
-    Button(onClick = {
-        lifecycleScope.launch {
-            settingsDataStore.updateCountdownDuration(countdownDuration)
-            settingsDataStore.updateAnimationEnabled(animationEnabled)
-            settingsDataStore.updateOperators(operators)
-            settingsDataStore.updateMaxOperatorValue(maxOperatorValue)
-            settingsDataStore.updateMinOperatorValue(minOperatorValue)
-        }
-    }) {
-        Text("Guardar")
-    }
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OpcionesUI(){
+fun OpcionesUI(lifecycleScope: CoroutineScope,settingsDataStore: SettingsDataStore){
 
     val coloresTextInput: TextFieldColors = OutlinedTextFieldDefaults.colors(
         focusedBorderColor = colorResource(R.color.black),
@@ -159,6 +152,12 @@ fun OpcionesUI(){
         focusedIndicatorColor = colorResource(R.color.black),
         unfocusedIndicatorColor = colorResource(R.color.gris),
     )
+
+    val coloresBoton: ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = colorResource(R.color.purple_500),
+        contentColor = colorResource(R.color.white)
+    )
+
 
     ConstraintLayout(
         modifier = Modifier
@@ -247,12 +246,40 @@ fun OpcionesUI(){
                 .padding(horizontal = 30.dp, vertical = 10.dp)
                 .constrainAs(fila7) {
                     top.linkTo(fila6.bottom)
-                    //bottom.linkTo(parent.bottom)
+                    //bottom.linkTo(fila8.top)
                 },
             horizontalArrangement = Arrangement.Center
         ){
             //spinner
             Animaciones(coloresSpinner)
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 30.dp, vertical = 50.dp)
+                .constrainAs(fila8) {
+                    //top.linkTo(fila7.bottom)
+                    bottom.linkTo(parent.bottom)
+                },
+            horizontalArrangement = Arrangement.Center
+        ){
+            //Guardar
+            Button(
+                onClick = {
+                    lifecycleScope.launch {
+                        settingsDataStore.updateCountdownDuration(countdownDuration)
+                        settingsDataStore.updateAnimationEnabled(animationEnabled)
+                        settingsDataStore.updateOperators(operators)
+                        settingsDataStore.updateMaxOperatorValue(maxOperatorValue)
+                        settingsDataStore.updateMinOperatorValue(minOperatorValue)
+                    }
+                },
+                colors = coloresBoton,
+                shape = RoundedCornerShape(4.dp)
+            ) {
+                Text("Guardar")
+            }
+
         }
 
 
@@ -462,7 +489,9 @@ fun Animaciones(coloresSpinner: TextFieldColors) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewOpciones() {
+    val lifecycleScope = rememberCoroutineScope()
+    val settingsDataStore = SettingsDataStore(LocalContext.current)
     PracticaPMtrimestre1Theme {
-        OpcionesUI()
+        OpcionesUI(lifecycleScope,settingsDataStore)
     }
 }

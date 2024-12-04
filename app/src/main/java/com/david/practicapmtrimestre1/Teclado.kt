@@ -34,7 +34,7 @@ fun Teclado(){
     ) {
         val (siete, ocho, nueve, ce, cuatro, cinco, seis,igual,uno,dos,tres,cero,c) = createRefs()
         val colores:ButtonColors=ButtonDefaults.buttonColors(
-            containerColor= colorResource(R.color.granate),
+            containerColor= colorResource(R.color.purple_500),
             contentColor= colorResource(R.color.magenta))
         val colorTexto=colorResource(R.color.white)
 
