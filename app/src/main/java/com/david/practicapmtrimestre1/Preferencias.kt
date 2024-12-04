@@ -20,6 +20,7 @@ class SettingsDataStore(private val context: Context) {
         val ANIMATION_ENABLED = booleanPreferencesKey("animacion")
         val OPERATORS = stringPreferencesKey("operaciones")
         val MAX_OPERATOR_VALUE = intPreferencesKey("max_operador_valor")
+        val MIN_OPERATOR_VALUE = intPreferencesKey("min_operador_valor")
     }
 
     val countdownDuration: Flow<Int> = context.dataStore.data.map { preferences ->
@@ -37,6 +38,10 @@ class SettingsDataStore(private val context: Context) {
     val maxOperatorValue: Flow<Int> = context.dataStore.data.map { preferences ->
         preferences[MAX_OPERATOR_VALUE] ?: 10
     }
+    val minOperatorValue: Flow<Int> = context.dataStore.data.map { preferences ->
+        preferences[MIN_OPERATOR_VALUE] ?: 10
+    }
+
 
     suspend fun updateCountdownDuration(duration: Int) {
         context.dataStore.edit { preferences ->
@@ -59,6 +64,11 @@ class SettingsDataStore(private val context: Context) {
     suspend fun updateMaxOperatorValue(value: Int) {
         context.dataStore.edit { preferences ->
             preferences[MAX_OPERATOR_VALUE] = value
+        }
+    }
+    suspend fun updateMinOperatorValue(value: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[MIN_OPERATOR_VALUE] = value
         }
     }
 }
