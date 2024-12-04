@@ -25,6 +25,9 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxColors
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -39,10 +42,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -111,6 +117,11 @@ fun OpcionesUI(){
         unfocusedContainerColor=colorResource(R.color.purple_100),
         focusedTextColor= colorResource(R.color.black),
         unfocusedTextColor= colorResource(R.color.gris),
+    )
+    val coloresCheckbox: CheckboxColors = CheckboxDefaults.colors(
+        checkedColor = colorResource(R.color.verde),
+        uncheckedColor = colorResource(R.color.white),
+        checkmarkColor = colorResource(R.color.white),
     )
 
     ConstraintLayout(
@@ -203,7 +214,7 @@ fun OpcionesUI(){
                 },
             horizontalArrangement = Arrangement.Center
         ){
-            //checkboxes
+            //spinner
         }
 
 
@@ -312,6 +323,20 @@ fun MaxMinoOperador(coloresTextInput: TextFieldColors){
         }
     }
 }
+@Composable
+fun Operaciones(coloresCheckbox: CheckboxColors){
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Checkbox(
+            checked = false,
+            onCheckedChange = { isChecked ->
+                operators = isChecked
+            },
+            colors = coloresCheckbox
+        )
+
+    }
+}
+
 
 
 

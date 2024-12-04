@@ -35,6 +35,8 @@ class SettingsDataStore(private val context: Context) {
         preferences[OPERATORS] ?: "+,-"
     }
 
+
+
     val maxOperatorValue: Flow<Int> = context.dataStore.data.map { preferences ->
         preferences[MAX_OPERATOR_VALUE] ?: 10
     }
