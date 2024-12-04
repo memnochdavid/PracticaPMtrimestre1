@@ -13,6 +13,7 @@ lifecycleViewmodelCompose = "2.8.7"
 material = "1.12.0"
 lifecycleRuntimeKtx = "2.8.7"
 composeBom = "2024.04.01"
+material3 = "1.3.1"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -41,6 +42,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

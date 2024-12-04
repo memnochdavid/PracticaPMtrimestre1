@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessAlarm
 import androidx.compose.material.icons.filled.ArrowDownward
@@ -28,11 +29,16 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -57,7 +63,17 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
 import com.david.practicapmtrimestre1.ui.theme.PracticaPMtrimestre1Theme
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.collect
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 
 class CalcuTronOpc : ComponentActivity() {
     private lateinit var settingsDataStore: SettingsDataStore
@@ -76,10 +92,12 @@ class CalcuTronOpc : ComponentActivity() {
 
 var countdownDuration by mutableIntStateOf(20)
 var animationEnabled by mutableStateOf(false)
-var operators by mutableStateOf("+,-")
+var operators by mutableStateOf("+,-,*")
 var maxOperatorValue by mutableIntStateOf(10)
 var minOperatorValue by mutableIntStateOf(1)
 
+var listaOperaciones by mutableStateOf(listOf<String>())
+var opcionesAnimaciones by mutableStateOf(listOf<String>())
 
 
 @Composable
@@ -87,14 +105,18 @@ fun Opciones(settingsDataStore: SettingsDataStore) {
     val lifecycleScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        settingsDataStore.countdownDuration.collect { countdownDuration = it }
-        settingsDataStore.animationEnabled.collect { animationEnabled = it }
-        settingsDataStore.operators.collect { operators = it }
-        settingsDataStore.maxOperatorValue.collect { maxOperatorValue = it }
-        settingsDataStore.minOperatorValue.collect { minOperatorValue = it }
+        countdownDuration= settingsDataStore.countdownDuration
+        animationEnabled = settingsDataStore.animationEnabled
+        operators = settingsDataStore.operators
+        maxOperatorValue = settingsDataStore.maxOperatorValue
+        minOperatorValue = settingsDataStore.minOperatorValue
+        //listas
+        listaOperaciones = operators.split(",")
+        opcionesAnimaciones= listOf("Activado", "Desactivado")
     }
 
     //AQUÍ LA IU
+    OpcionesUI()
 
     Button(onClick = {
         lifecycleScope.launch {
@@ -110,6 +132,7 @@ fun Opciones(settingsDataStore: SettingsDataStore) {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OpcionesUI(){
 
@@ -128,12 +151,21 @@ fun OpcionesUI(){
         checkmarkColor = colorResource(R.color.white),
     )
 
+    val coloresSpinner:TextFieldColors= ExposedDropdownMenuDefaults.textFieldColors(
+        focusedTextColor = colorResource(R.color.black),
+        unfocusedTextColor = colorResource(R.color.gris),
+        focusedContainerColor= colorResource(R.color.purple_050),
+        unfocusedContainerColor=colorResource(R.color.purple_100),
+        focusedIndicatorColor = colorResource(R.color.black),
+        unfocusedIndicatorColor = colorResource(R.color.gris),
+    )
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(R.color.purple_200)),
     ){
-        val (fila1, fila2, fila3, fila4, fila5, fila6, fila7) = createRefs()
+        val (fila1, fila2, fila3, fila4, fila5, fila6, fila7, fila8) = createRefs()
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -187,7 +219,7 @@ fun OpcionesUI(){
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp)
+                .padding(horizontal = 20.dp, vertical = 10.dp)
                 .constrainAs(fila5) {
                     top.linkTo(fila4.bottom)
                     bottom.linkTo(fila6.top)
@@ -195,6 +227,7 @@ fun OpcionesUI(){
             horizontalArrangement = Arrangement.Center
         ){
             //checkboxes
+            Operaciones(coloresCheckbox)
         }
         Row(
             modifier = Modifier
@@ -211,7 +244,7 @@ fun OpcionesUI(){
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp)
+                .padding(horizontal = 30.dp, vertical = 10.dp)
                 .constrainAs(fila7) {
                     top.linkTo(fila6.bottom)
                     //bottom.linkTo(parent.bottom)
@@ -219,6 +252,7 @@ fun OpcionesUI(){
             horizontalArrangement = Arrangement.Center
         ){
             //spinner
+            Animaciones(coloresSpinner)
         }
 
 
@@ -238,7 +272,7 @@ fun CuentaAtras(coloresTextInput: TextFieldColors){
             color= colorResource(R.color.black),
             text="Cuenta Atrás")},
         modifier = Modifier
-            .padding(vertical = 20.dp)
+            .padding(vertical = 20.dp, horizontal = 10.dp)
             .fillMaxWidth()
             .background(colorResource(id = R.color.transparente)),
             //.clip(RoundedCornerShape(0.dp)),
@@ -266,6 +300,7 @@ fun MaxMinoOperador(coloresTextInput: TextFieldColors){
         Column(
             modifier = Modifier
                 .weight(1f)
+                .padding(horizontal = 10.dp)
                 .wrapContentHeight()
         ){
             OutlinedTextField(
@@ -297,6 +332,7 @@ fun MaxMinoOperador(coloresTextInput: TextFieldColors){
         Column(
             modifier = Modifier
                 .weight(1f)
+                .padding(horizontal = 10.dp)
                 .wrapContentHeight()
         ){
             OutlinedTextField(
@@ -329,15 +365,75 @@ fun MaxMinoOperador(coloresTextInput: TextFieldColors){
 }
 @Composable
 fun Operaciones(coloresCheckbox: CheckboxColors){
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Checkbox(
-            checked = false,
-            onCheckedChange = { isChecked ->
-                //operators = isChecked
-            },
-            colors = coloresCheckbox
-        )
+    //borrar
+    listaOperaciones = operators.split(",")
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .wrapContentHeight()
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        var operacionTexto=""
+        for (operacion in listaOperaciones) {
+            when (operacion) {
+                "+" -> operacionTexto = "Suma"
+                "-" -> operacionTexto = "Resta"
+                "*" -> operacionTexto = "Multi"
+            }
+            Checkbox(
+                checked = operators.contains(operacion),
+                onCheckedChange = { isChecked ->
+                    if (isChecked) {
+                        listaOperaciones += ",$operacion"
+                    } else {
+                        listaOperaciones = listaOperaciones.filter { it != operacion }
+                    }
+                },
+                colors = coloresCheckbox
+            )
+            Text(operacionTexto, fontSize = 13.sp,modifier = Modifier.padding(end = 10.dp))
+        }
 
+
+
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun Animaciones(coloresSpinner: TextFieldColors) {
+    val animationOptions = listOf("Activado", "Desactivado")
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOption by remember { mutableStateOf(animationOptions[0]) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded },
+    ) {
+        TextField(
+            value = selectedOption,
+            onValueChange = {},
+            readOnly = true,
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            modifier = Modifier.menuAnchor()
+                .fillMaxWidth(),
+            colors = coloresSpinner
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            animationOptions.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option) },
+                    onClick = {
+                        selectedOption = option
+                        expanded = false
+                    }
+                )
+            }
+        }
     }
 }
 
@@ -367,6 +463,6 @@ fun Operaciones(coloresCheckbox: CheckboxColors){
 @Composable
 fun PreviewOpciones() {
     PracticaPMtrimestre1Theme {
-        OpcionesUI( )
+        OpcionesUI()
     }
 }

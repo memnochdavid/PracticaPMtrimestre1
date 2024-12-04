@@ -26,7 +26,7 @@ class SettingsDataStore(private val context: Context) {
         get() = sharedPrefs.getBoolean("animacion", false)
 
     val operators: String
-        get() = sharedPrefs.getString("operaciones", "+,-") ?: "+,-"
+        get() = sharedPrefs.getString("operaciones", "+,-,*") ?: "+,-,*"
 
     val maxOperatorValue: Int
         get() = sharedPrefs.getInt("max_operador_valor", 10)

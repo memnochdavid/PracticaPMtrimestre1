@@ -2,7 +2,7 @@
 <resources>
     <integer name="cuenta_atras_dur">20</integer>
     <bool name="animacion">false</bool>
-    <string name="operaciones">+,-</string>
+    <string name="operaciones">+,-,*</string>
     <integer name="max_operador_valor">10</integer>
     <integer name="min_operador_valor">1</integer>
 </resources>
