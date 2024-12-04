@@ -136,7 +136,7 @@ fun OpcionesUI(lifecycleScope: CoroutineScope,settingsDataStore: SettingsDataSto
         unfocusedTextColor= colorResource(R.color.gris),
     )
     val coloresCheckbox: CheckboxColors = CheckboxDefaults.colors(
-        checkedColor = colorResource(R.color.verde),
+        checkedColor = colorResource(R.color.purple_500),
         uncheckedColor = colorResource(R.color.white),
         checkmarkColor = colorResource(R.color.white),
     )
