@@ -347,10 +347,10 @@ fun MaxMinoOperador(coloresTextInput: TextFieldColors){
                     Icon(
                         imageVector = Icons.Filled.ArrowDownward,
                         tint = colorResource(id = R.color.black),
-                        contentDescription = "Buscar"
+                        contentDescription = ""
                     )
                 },
-                placeholder = { Text("nombre del Pokémon",style = TextStyle(color = colorResource(id = R.color.white)))},
+                placeholder = { Text("",style = TextStyle(color = colorResource(id = R.color.white)))},
                 shape = RoundedCornerShape(6.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 colors = coloresTextInput
@@ -379,10 +379,10 @@ fun MaxMinoOperador(coloresTextInput: TextFieldColors){
                     Icon(
                         imageVector = Icons.Filled.ArrowUpward,
                         tint = colorResource(id = R.color.black),
-                        contentDescription = "Buscar"
+                        contentDescription = ""
                     )
                 },
-                placeholder = { Text("nombre del Pokémon",style = TextStyle(color = colorResource(id = R.color.white)))},
+                placeholder = { Text("",style = TextStyle(color = colorResource(id = R.color.white)))},
                 shape = RoundedCornerShape(6.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 colors = coloresTextInput

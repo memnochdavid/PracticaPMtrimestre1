@@ -25,23 +25,45 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
 var escribe by mutableStateOf("")
+var historial = mutableStateListOf<Operacion>()
+var operacionesPool = mutableStateListOf<Operacion>()
+var aciertos= mutableIntStateOf(0)
+var fallos= mutableIntStateOf(0)
+var intentoResultado= mutableIntStateOf(0)
+
+
 
 class CalcuTron : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        operacionesPool+=generaOperacion()//genera la primera operación
         enableEdgeToEdge()
         setContent {
             PracticaPMtrimestre1Theme {
@@ -55,6 +77,7 @@ class CalcuTron : ComponentActivity() {
 fun CalcuTronUI() {
     val context = LocalContext.current
     var intent= Intent(context, CalcuTronOpc::class.java)
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -91,11 +114,8 @@ fun CalcuTronUI() {
                 },
             horizontalArrangement = Arrangement.Center
         ){
-            //cuenta atrás y botón settings
-                CuentaAtras()
-
-
-
+            //cuenta atrás
+            CuentaAtras()
         }
         Row(
             modifier = Modifier
@@ -104,9 +124,12 @@ fun CalcuTronUI() {
                 .constrainAs(fila2) {
                     top.linkTo(fila1.bottom)
                     bottom.linkTo(fila3.top)
-                }
+                },
+            horizontalArrangement = Arrangement.SpaceAround
         ){
-            //aciertos
+            //aciertos y fallos
+            AciertosFallos(1)//aciertos
+            AciertosFallos(2)//fallos
         }
         Row(
             modifier = Modifier
@@ -117,7 +140,8 @@ fun CalcuTronUI() {
                     bottom.linkTo(fila4.top)
                 }
         ){
-            //fallos
+            //cuenta anterior
+
         }
         Row(
             modifier = Modifier
@@ -128,7 +152,8 @@ fun CalcuTronUI() {
                     bottom.linkTo(fila5.top)
                 }
         ){
-            //cuenta anterior
+            //cuenta actual
+            OperacionActual()
         }
         Row(
             modifier = Modifier
@@ -139,7 +164,7 @@ fun CalcuTronUI() {
                     bottom.linkTo(fila6.top)
                 }
         ){
-            //cuenta actual
+            //cuenta siguiente
         }
         Row(
             modifier = Modifier
@@ -147,17 +172,6 @@ fun CalcuTronUI() {
                 .padding(horizontal = 10.dp)
                 .constrainAs(fila6) {
                     top.linkTo(fila5.bottom)
-                    bottom.linkTo(fila7.top)
-                }
-        ){
-            //cuenta siguiente
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp)
-                .constrainAs(fila7) {
-                    top.linkTo(fila6.bottom)
                     bottom.linkTo(parent.bottom)
                 },
             horizontalArrangement = Arrangement.Center
@@ -186,9 +200,61 @@ fun CuentaAtras() {
     )
 }
 
+@Composable
+fun AciertosFallos(opc:Int){
+    when(opc){
+        1->{
+            Text(text = "Aciertos: ${aciertos.intValue}", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        }
+        2->{
+            Text(text = "Fallos: ${fallos.intValue}", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        }
+    }
+}
 
-
-
+@Composable
+fun OperacionActual(){
+    val coloresTextInput: TextFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedBorderColor = colorResource(R.color.black),
+        unfocusedBorderColor = colorResource(R.color.gris),
+        cursorColor = colorResource(R.color.black),
+        focusedContainerColor= colorResource(R.color.purple_050),
+        unfocusedContainerColor=colorResource(R.color.purple_100),
+        focusedTextColor= colorResource(R.color.black),
+        unfocusedTextColor= colorResource(R.color.gris),
+    )
+    var cuenta=operacionesPool.last()
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth(0.5f)
+    ){
+        Text(text = cuenta.toString().dropLast(1), fontSize = 50.sp, fontWeight = FontWeight.Bold)
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth(0.5f)
+    ){
+        OutlinedTextField(
+            value = "",
+            onValueChange = { newValue ->
+                intentoResultado = (newValue.toIntOrNull() ?: intentoResultado) as MutableIntState
+            },
+            label = { Text(
+                color= colorResource(R.color.black),
+                text="Max. valor")},
+            modifier = Modifier
+                .padding(vertical = 20.dp)
+                .fillMaxWidth()
+                .background(colorResource(id = R.color.transparente)),
+            placeholder = { Text("",style = TextStyle(color = colorResource(id = R.color.white)))},
+            shape = RoundedCornerShape(6.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            colors = coloresTextInput
+        )
+    }
+}
 
 
 

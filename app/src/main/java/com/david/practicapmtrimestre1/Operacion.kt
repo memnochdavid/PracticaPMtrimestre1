@@ -22,11 +22,15 @@ data class Operacion(
             }
         }
     }
+    override fun toString(): String {
+        return "$a $operador $b"
+    }
+
 }
 
 fun generaOperacion():Operacion{
     var operacion:Operacion
-    var operador= listaOperaciones[getRandomInt(listaOperaciones.size-1)]
+    var operador= listaOperaciones[listaOperaciones.indices.random()]
     var a = getRandomIntInRange(minOperatorValue, maxOperatorValue)
     var b = getRandomIntInRange(minOperatorValue, maxOperatorValue)
     operacion=Operacion(operador,a,b)
