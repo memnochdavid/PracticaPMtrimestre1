@@ -7,7 +7,7 @@ import kotlin.random.Random
 import kotlin.random.nextInt
 
 data class Operacion(
-    val operador:String,
+    var operador:String,
     val a:Int,
     val b:Int,
     var res:Int=0
@@ -22,7 +22,10 @@ data class Operacion(
             }
             "*" -> {
                 res=a*b
-            }
+            }/*
+            ""->{//por si acaso
+                operador="-"
+            }*/
         }
     }
     override fun toString(): String {
@@ -32,7 +35,7 @@ data class Operacion(
 }
 
 fun generaOperacion():Operacion{
-    var operacion=Operacion("",0,0)
+    var operacion=Operacion("-",666,666)
     if(preferenciasCargadas){
         var operador= listaOperaciones[listaOperaciones.indices.random()]
         var a = getRandomIntInRange(minOperatorValue, maxOperatorValue)

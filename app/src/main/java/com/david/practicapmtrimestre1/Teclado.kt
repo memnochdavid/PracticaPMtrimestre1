@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -31,9 +32,9 @@ fun Teclado(){
     ConstraintLayout(
         modifier = Modifier
             .padding(all = 2.dp)
-            .fillMaxWidth()
+            .wrapContentWidth()
     ) {
-        val (siete, ocho, nueve, ce, cuatro, cinco, seis,igual,uno,dos,tres,cero,c) = createRefs()
+        val (siete, ocho, nueve, ce, cuatro, cinco, seis,igual,uno,dos,tres,cero,c,menos) = createRefs()
         val colores:ButtonColors=ButtonDefaults.buttonColors(
             containerColor= colorResource(R.color.magenta),
             contentColor= colorResource(R.color.magenta))
@@ -94,7 +95,7 @@ fun Teclado(){
                     top.linkTo(parent.top)
                     start.linkTo(igual.start)
                     end.linkTo(igual.end)
-                    bottom.linkTo(igual.top)
+                    bottom.linkTo(menos.top)
                 },
             shape = RoundedCornerShape(4.dp),
             colors = colores
@@ -138,7 +139,7 @@ fun Teclado(){
                 .constrainAs(seis) {
                     start.linkTo(cinco.end)
                     end.linkTo(igual.start)
-                    top.linkTo(igual.top)
+                    top.linkTo(menos.top)
                     bottom.linkTo(tres.top)
                 },
             shape = RoundedCornerShape(4.dp),
@@ -146,14 +147,29 @@ fun Teclado(){
         ){Text(text = "6", color = colorTexto)}
         Button(
             onClick = {
+                escribe+="-"
+            },modifier = Modifier
+                .wrapContentSize()
+                .padding(all = 1.dp)
+                .constrainAs(menos) {
+                    start.linkTo(seis.end)
+                    end.linkTo(parent.end)
+                    top.linkTo(ce.bottom)
+                    bottom.linkTo(igual.top)
+                },
+            shape = RoundedCornerShape(4.dp),
+            colors = colores
+        ){Text(text = "-", color = colorTexto)}
+        Button(
+            onClick = {
                 confirma=true
             },modifier = Modifier
                 .fillMaxHeight()
                 .padding(horizontal = 1.dp, vertical = 5.dp)
                 .constrainAs(igual) {
-                    start.linkTo(seis.end)
+                    start.linkTo(tres.end)
                     end.linkTo(parent.end)
-                    top.linkTo(ce.bottom)
+                    top.linkTo(menos.bottom)
                     bottom.linkTo(c.bottom)
                     height = Dimension.fillToConstraints
                 },

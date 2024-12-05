@@ -105,9 +105,11 @@ fun CalcuTronUI(settingsDataStore: SettingsDataStore) {
     operacionesPool+=generaOperacion()
     operacionesPool+=generaOperacion()
     LaunchedEffect(Unit) {
-        countdownDuration= settingsDataStore.countdownDuration
+        //countdownDuration= settingsDataStore.countdownDuration
         animationEnabled = settingsDataStore.animationEnabled
         operators = settingsDataStore.operators
+        //borramos la primera posición de operators, por algún motivo pillaba un operador vacío ""
+        operators = operators.substring(1)
         maxOperatorValue = settingsDataStore.maxOperatorValue
         minOperatorValue = settingsDataStore.minOperatorValue
         //listas
@@ -242,7 +244,7 @@ fun CalcuTronUI(settingsDataStore: SettingsDataStore) {
 fun CuentaAtras(settingsDataStore: SettingsDataStore) {
     val listaColores = listOf(colorResource(R.color.black),colorResource(R.color.magenta), colorResource(R.color.granate), colorResource(R.color.rojo), colorResource(R.color.purple_500))
     var colorContador by remember { mutableStateOf(listaColores[0]) }
-    var remainingTime by remember { mutableIntStateOf(countdownDuration) }
+    var remainingTime by remember { mutableIntStateOf(settingsDataStore.countdownDuration) }
     LaunchedEffect(key1 = remainingTime) {
         if (remainingTime > 0) {
             delay(1000)
