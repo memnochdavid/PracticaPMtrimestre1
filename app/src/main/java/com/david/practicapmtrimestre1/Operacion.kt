@@ -35,7 +35,7 @@ data class Operacion(
 }
 
 fun generaOperacion():Operacion{
-    var operacion=Operacion("-",666,666)
+    var operacion=Operacion("-",666,666)//si todo va bien, esta operación no aparecerá
     if(preferenciasCargadas){
         var operador= listaOperaciones[listaOperaciones.indices.random()]
         var a = getRandomIntInRange(minOperatorValue, maxOperatorValue)

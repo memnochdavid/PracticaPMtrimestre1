@@ -74,6 +74,7 @@ var historial = mutableStateListOf<Operacion>()
 var operacionesPool = mutableStateListOf<Operacion>()
 var aciertos= mutableIntStateOf(0)
 var fallos= mutableIntStateOf(0)
+var operacionesResueltas= mutableIntStateOf(0)
 var intentoResultado= mutableIntStateOf(0)
 var seAcertoUltimaCuenta= mutableStateOf(false)
 
@@ -298,6 +299,7 @@ fun OperacionActual(){
                 confirma=false
                 seAcertoUltimaCuenta.value = true
                 historial+=cuenta
+                operacionesResueltas.intValue++
             }
             else{
                 fallos.intValue++
@@ -307,6 +309,7 @@ fun OperacionActual(){
                 confirma=false
                 seAcertoUltimaCuenta.value = false
                 historial+=cuenta
+                operacionesResueltas.intValue++
             }
         }
     }

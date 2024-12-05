@@ -103,19 +103,7 @@ class CalcuTronOpc : ComponentActivity() {
 @Composable
 fun Opciones(settingsDataStore: SettingsDataStore) {
     val lifecycleScope = rememberCoroutineScope()
-/*
-    LaunchedEffect(Unit) {
-        countdownDuration= settingsDataStore.countdownDuration
-        animationEnabled = settingsDataStore.animationEnabled
-        operators = settingsDataStore.operators
-        maxOperatorValue = settingsDataStore.maxOperatorValue
-        minOperatorValue = settingsDataStore.minOperatorValue
-        //listas
-        listaOperaciones = operators.split(",")
-        opcionesAnimaciones= listOf("Activado", "Desactivado")
-        preferenciasCargadas = true
-    }
-*/
+
     //AQUÍ LA IU
     OpcionesUI(lifecycleScope,settingsDataStore)
 
@@ -187,7 +175,7 @@ fun OpcionesUI(lifecycleScope: CoroutineScope,settingsDataStore: SettingsDataSto
             horizontalArrangement = Arrangement.Center
             ){
                 //cuenta atras
-                CuentaAtras(coloresTextInput)
+                CuentaAtras(coloresTextInput,settingsDataStore)
         }
         Row(
             modifier = Modifier
@@ -259,8 +247,28 @@ fun OpcionesUI(lifecycleScope: CoroutineScope,settingsDataStore: SettingsDataSto
                     //top.linkTo(fila7.bottom)
                     bottom.linkTo(parent.bottom)
                 },
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.SpaceEvenly
         ){
+            //carga las prefs por defecto desde el xml
+            Button(
+                onClick = {
+                    lifecycleScope.launch {
+                        settingsDataStore.updateCountdownDuration(settingsDataStore.countdownDurationDef)
+                        settingsDataStore.updateAnimationEnabled(settingsDataStore.animationEnabledDef)
+                        settingsDataStore.updateOperators(settingsDataStore.operationsDef)
+                        settingsDataStore.updateMaxOperatorValue(settingsDataStore.maxOperandValueDef)
+                        settingsDataStore.updateMinOperatorValue(settingsDataStore.minOperandValueDef)
+
+                        (context as CalcuTronOpc).finish()
+
+                    }
+                },
+                colors = coloresBoton,
+                shape = RoundedCornerShape(4.dp)
+            ) {
+                Text("Por defecto")
+            }
+
             //Guardar
             Button(
                 onClick = {
@@ -270,8 +278,7 @@ fun OpcionesUI(lifecycleScope: CoroutineScope,settingsDataStore: SettingsDataSto
                         settingsDataStore.updateOperators(operators)
                         settingsDataStore.updateMaxOperatorValue(maxOperatorValue)
                         settingsDataStore.updateMinOperatorValue(minOperatorValue)
-                        //se reinicia el contador al salir de las opciones
-                        countdownDuration= settingsDataStore.countdownDuration
+
                         (context as CalcuTronOpc).finish()
 
                     }
@@ -291,7 +298,7 @@ fun OpcionesUI(lifecycleScope: CoroutineScope,settingsDataStore: SettingsDataSto
 
 
 @Composable
-fun CuentaAtras(coloresTextInput: TextFieldColors){
+fun CuentaAtras(coloresTextInput: TextFieldColors,settingsDataStore: SettingsDataStore){
     OutlinedTextField(
         value = countdownDuration.toString(),
         onValueChange = { newValue ->

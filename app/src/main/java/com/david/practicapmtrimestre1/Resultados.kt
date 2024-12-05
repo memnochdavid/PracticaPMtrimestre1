@@ -79,8 +79,8 @@ fun ResultadosUI() {
             horizontalArrangement = Arrangement.SpaceAround
         ){
             //acertadas - falladas
-            Text(text = "Acertadas: ", fontSize = 15.sp)
-            Text(text = "Falladas: ", fontSize = 15.sp)
+            Text(text = "Acertadas: ${aciertos.intValue}", fontSize = 15.sp)
+            Text(text = "Falladas: ${fallos.intValue}", fontSize = 15.sp)
         }
         Row(
             modifier = Modifier
@@ -93,7 +93,7 @@ fun ResultadosUI() {
             horizontalArrangement = Arrangement.Center
         ){
             //porcentaje aciertos
-            Text(text = "Porcentaje Aciertos: ", fontSize = 15.sp)
+            Text(text = "Porcentaje Aciertos: ${(aciertos.intValue*100)/(operacionesResueltas.intValue).toFloat()}%", fontSize = 15.sp)
         }
         Row(
             modifier = Modifier
