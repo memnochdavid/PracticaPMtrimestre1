@@ -19,6 +19,8 @@ class SettingsDataStore(private val context: Context) {
     val minOperandValueDef = resources.getInteger(R.integer.min_operador_valor)
     ///////////////
 
+
+
     private val sharedPrefs = context.getSharedPreferences("preferencias", Context.MODE_PRIVATE)
 
     val countdownDuration: Int
@@ -35,6 +37,16 @@ class SettingsDataStore(private val context: Context) {
 
     val minOperatorValue: Int
         get() = sharedPrefs.getInt("min_operador_valor", minOperandValueDef)
+
+    val totalAciertos:Int
+        get() = sharedPrefs.getInt("total_aciertos", 0)
+
+    val totalFallos:Int
+        get() = sharedPrefs.getInt("total_fallos", 0)
+
+    val totalPartidas:Int
+        get() = sharedPrefs.getInt("total_partidas", 0)
+
 
 
     fun updateCountdownDuration(duration: Int) {
@@ -56,6 +68,19 @@ class SettingsDataStore(private val context: Context) {
     fun updateMinOperatorValue(value: Int) {
         sharedPrefs.edit().putInt("min_operador_valor", value).apply()
     }
+
+    fun updateTotalAciertos(value: Int) {
+        sharedPrefs.edit().putInt("total_aciertos", value+totalAciertos).apply()
+    }
+
+    fun updateTotalFallos(value: Int) {
+        sharedPrefs.edit().putInt("total_fallos", value+totalFallos).apply()
+    }
+
+    fun updateTotalPartidas(value: Int) {
+        sharedPrefs.edit().putInt("total_partidas", value+totalPartidas).apply()
+    }
+
 
 
 }

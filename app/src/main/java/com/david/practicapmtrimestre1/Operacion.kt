@@ -24,7 +24,7 @@ data class Operacion(
                 res=a*b
             }
             ""->{//por si acaso, en la preview cargaba un singno vacio ""
-                operador="-"
+                operador="&&"
             }
         }
     }
@@ -35,7 +35,7 @@ data class Operacion(
 }
 
 fun generaOperacion():Operacion{
-    var operacion=Operacion("-",666,666)//si todo va bien, esta operación no aparecerá
+    var operacion=Operacion("##",100,99)//si todo va bien, esta operación no aparecerá
     if(preferenciasCargadas){
         var operador= listaOperaciones[listaOperaciones.indices.random()]
         var a = getRandomIntInRange(minOperatorValue, maxOperatorValue)

@@ -175,7 +175,7 @@ fun OpcionesUI(lifecycleScope: CoroutineScope,settingsDataStore: SettingsDataSto
             horizontalArrangement = Arrangement.Center
             ){
                 //cuenta atras
-                CuentaAtras(coloresTextInput,settingsDataStore)
+            CuentaAtrasOpc(coloresTextInput,settingsDataStore)
         }
         Row(
             modifier = Modifier
@@ -298,7 +298,8 @@ fun OpcionesUI(lifecycleScope: CoroutineScope,settingsDataStore: SettingsDataSto
 
 
 @Composable
-fun CuentaAtras(coloresTextInput: TextFieldColors,settingsDataStore: SettingsDataStore){
+fun CuentaAtrasOpc(coloresTextInput: TextFieldColors,settingsDataStore: SettingsDataStore){
+
     OutlinedTextField(
         value = countdownDuration.toString(),
         onValueChange = { newValue ->
@@ -415,6 +416,7 @@ fun Operaciones(coloresCheckbox: CheckboxColors, settingsDataStore: SettingsData
             onCheckedChange = { isChecked ->
                 operators = updateOperators(operators, "+", isChecked)
                 listaOperaciones = operators.split(",")
+                Log.d("operaciones1",listaOperaciones.toString())
                 coroutineScope.launch {
                     settingsDataStore.updateOperators(operators)
                 }
@@ -427,6 +429,7 @@ fun Operaciones(coloresCheckbox: CheckboxColors, settingsDataStore: SettingsData
             onCheckedChange = { isChecked ->
                 operators = updateOperators(operators, "-", isChecked)
                 listaOperaciones = operators.split(",")
+                Log.d("operaciones2",listaOperaciones.toString())
                 coroutineScope.launch {
                     settingsDataStore.updateOperators(operators)
                 }
@@ -439,6 +442,7 @@ fun Operaciones(coloresCheckbox: CheckboxColors, settingsDataStore: SettingsData
             onCheckedChange = { isChecked ->
                 operators = updateOperators(operators, "*", isChecked)
                 listaOperaciones = operators.split(",")
+                Log.d("operaciones3",listaOperaciones.toString())
                 coroutineScope.launch {
                     settingsDataStore.updateOperators(operators)
                 }
@@ -469,7 +473,8 @@ fun Animaciones(coloresSpinner: TextFieldColors, settingsDataStore: SettingsData
             onValueChange = {},
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.menuAnchor()
+            modifier = Modifier
+                .menuAnchor()
                 .fillMaxWidth(),
             colors = coloresSpinner
         )
@@ -507,7 +512,7 @@ fun updateOperators(operators: String, operacion: String, isChecked: Boolean): S
             operators
         }
     } else {
-        operators.replace(",$operacion", "").replace(operacion, "")
+        operators.replace(operacion, "").replace(operacion, "")
     }
 }
 

@@ -29,19 +29,21 @@ import com.david.practicapmtrimestre1.ui.theme.PracticaPMtrimestre1Theme
 import kotlinx.coroutines.launch
 
 class Resultados : ComponentActivity() {
+    private lateinit var settingsDataStore: SettingsDataStore
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        settingsDataStore = SettingsDataStore(this)
         enableEdgeToEdge()
         setContent {
             PracticaPMtrimestre1Theme {
-                ResultadosUI()
+                ResultadosUI(settingsDataStore)
             }
         }
     }
 }
 
 @Composable
-fun ResultadosUI() {
+fun ResultadosUI(settingsDataStore: SettingsDataStore) {
     val coloresBoton: ButtonColors = ButtonDefaults.buttonColors(
         containerColor = colorResource(R.color.purple_500),
         contentColor = colorResource(R.color.white)
@@ -119,8 +121,8 @@ fun ResultadosUI() {
         ){
             //acertadas - falladas
             //acertadas - falladas
-            Text(text = "Acertadas: ", fontSize = 15.sp)
-            Text(text = "Falladas: ", fontSize = 15.sp)
+            Text(text = "Acertadas: ${settingsDataStore.totalAciertos}", fontSize = 15.sp)
+            Text(text = "Falladas: ${settingsDataStore.totalFallos}", fontSize = 15.sp)
         }
         Row(
             modifier = Modifier
@@ -133,14 +135,14 @@ fun ResultadosUI() {
             horizontalArrangement = Arrangement.Center
         ){
             //porcentaje aciertos
-            Text(text = "Porcentaje Aciertos: ", fontSize = 15.sp)
+            Text(text = "Porcentaje Aciertos: ${(settingsDataStore.totalAciertos*100)/(settingsDataStore.totalPartidas).toFloat()}", fontSize = 15.sp)
         }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(all = 30.dp)
                 .constrainAs(fila7) {
-                    //top.linkTo(fila6.bottom)
+                    top.linkTo(fila6.bottom)
                     bottom.linkTo(parent.bottom)
                 },
             horizontalArrangement = Arrangement.Center
@@ -166,7 +168,8 @@ fun ResultadosUI() {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview2() {
+    var settingsDataStore= SettingsDataStore(LocalContext.current)
     PracticaPMtrimestre1Theme {
-        ResultadosUI()
+        ResultadosUI(settingsDataStore)
     }
 }

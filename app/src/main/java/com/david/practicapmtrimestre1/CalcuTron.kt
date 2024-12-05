@@ -2,6 +2,7 @@ package com.david.practicapmtrimestre1
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -33,6 +34,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -55,6 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 var countdownDuration by mutableIntStateOf(20)
 var animationEnabled by mutableStateOf(false)
@@ -77,6 +82,7 @@ var fallos= mutableIntStateOf(0)
 var operacionesResueltas= mutableIntStateOf(0)
 var intentoResultado= mutableIntStateOf(0)
 var seAcertoUltimaCuenta= mutableStateOf(false)
+lateinit var remainingTime:MutableIntState
 
 
 
@@ -86,7 +92,8 @@ class CalcuTron : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         settingsDataStore = SettingsDataStore(this)
-        val settingsDataStore = SettingsDataStore(this)
+        remainingTime=mutableIntStateOf(settingsDataStore.countdownDuration)
+        //val settingsDataStore = SettingsDataStore(this)
 
         //enableEdgeToEdge()
         setContent {
@@ -102,6 +109,11 @@ fun CalcuTronUI(settingsDataStore: SettingsDataStore) {
     val context = LocalContext.current
     var intentOpciones= Intent(context, CalcuTronOpc::class.java)
     var intentResul= Intent(context, Resultados::class.java)
+    val coloresBoton: ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = colorResource(R.color.purple_500),
+        contentColor = colorResource(R.color.white)
+    )
+
     //genera la primera y la segunda operación
     operacionesPool+=generaOperacion()
     operacionesPool+=generaOperacion()
@@ -110,13 +122,17 @@ fun CalcuTronUI(settingsDataStore: SettingsDataStore) {
         animationEnabled = settingsDataStore.animationEnabled
         operators = settingsDataStore.operators
         //borramos la primera posición de operators, por algún motivo pillaba un operador vacío ""
-        operators = operators.substring(1)
+        if(operators[0].toString()==","){
+            operators = operators.substring(1)
+        }
+        Log.d("operadoresSDLKJGNSDFKGJDNF",operators)
         maxOperatorValue = settingsDataStore.maxOperatorValue
         minOperatorValue = settingsDataStore.minOperatorValue
         //listas
         listaOperaciones = operators.split(",")
         opcionesAnimaciones= listOf("Activado", "Desactivado")
         preferenciasCargadas = true
+        countdownDuration= settingsDataStore.countdownDuration//
     }
 
     ConstraintLayout(
@@ -124,7 +140,7 @@ fun CalcuTronUI(settingsDataStore: SettingsDataStore) {
             .fillMaxSize()
             .background(colorResource(R.color.purple_100))
     ) {
-        val (fila1, fila2, fila3, fila4, fila5, fila6, fila7, fila0) = createRefs()
+        val (fila1, fila2, fila3, fila4, fila5, fila6,fila0) = createRefs()
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -143,6 +159,24 @@ fun CalcuTronUI(settingsDataStore: SettingsDataStore) {
                     },
                 contentDescription = "",
                 painter = painterResource(id=R.drawable.stats)
+            )
+            Image(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clickable {
+                        (context as CalcuTron).recreate()
+                        settingsDataStore.updateTotalAciertos(aciertos.intValue)
+                        settingsDataStore.updateTotalFallos(fallos.intValue)
+                        settingsDataStore.updateTotalPartidas(operacionesResueltas.intValue)
+                        fallos.intValue=0
+                        aciertos.intValue=0
+
+                        operacionesResueltas.intValue=0
+                        operacionesPool.clear()
+                        historial.clear()
+                    },
+                contentDescription = "",
+                painter = painterResource(id=R.drawable.recreate)
             )
             Image(
                 modifier = Modifier
@@ -228,13 +262,30 @@ fun CalcuTronUI(settingsDataStore: SettingsDataStore) {
                 .fillMaxWidth()
                 .padding(horizontal = 10.dp)
                 .constrainAs(fila6) {
-                    top.linkTo(fila5.bottom)
+                    //top.linkTo(fila5.bottom)
                     bottom.linkTo(parent.bottom)
                 },
             horizontalArrangement = Arrangement.Center
         ){
             //teclado
-            Teclado()
+            if(remainingTime.intValue>0){
+                Teclado()
+            }
+            else{
+                //Text(text = "FIN DEL TIEMPO", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Button(
+                    onClick = {
+                        (context as CalcuTron).recreate()
+                        settingsDataStore.updateTotalAciertos(aciertos.intValue)
+                        settingsDataStore.updateTotalFallos(fallos.intValue)
+                        settingsDataStore.updateTotalPartidas(operacionesResueltas.intValue)
+                    },
+                    colors = coloresBoton,
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Text("Nueva Partida")
+                }
+            }
         }
     }
 
@@ -245,11 +296,11 @@ fun CalcuTronUI(settingsDataStore: SettingsDataStore) {
 fun CuentaAtras(settingsDataStore: SettingsDataStore) {
     val listaColores = listOf(colorResource(R.color.black),colorResource(R.color.magenta), colorResource(R.color.granate), colorResource(R.color.rojo), colorResource(R.color.purple_500))
     var colorContador by remember { mutableStateOf(listaColores[0]) }
-    var remainingTime by remember { mutableIntStateOf(settingsDataStore.countdownDuration) }
-    LaunchedEffect(key1 = remainingTime) {
-        if (remainingTime > 0) {
+    //var remainingTime by remember { mutableIntStateOf(settingsDataStore.countdownDuration) }
+    LaunchedEffect(key1 = remainingTime.intValue) {
+        if (remainingTime.intValue > 0) {
             delay(1000)
-            remainingTime--
+            remainingTime.intValue--
             if (settingsDataStore.animationEnabled) {
                 // Cambia el color solo si la animación está habilitada
                 colorContador = listaColores[(listaColores.indexOf(colorContador) + 1) % listaColores.size]
@@ -257,7 +308,7 @@ fun CuentaAtras(settingsDataStore: SettingsDataStore) {
         }
     }
     Text(
-        text = "$remainingTime",
+        text = "${remainingTime.intValue}",
         fontSize = 50.sp,
         color = colorContador,
         fontWeight = FontWeight.Bold,
@@ -387,13 +438,6 @@ fun OperacionAnterior(){
 @Composable
 fun OperacionSiguiente(){
     var cuenta:Operacion
-    var painter: Painter
-    if(seAcertoUltimaCuenta.value){
-        painter=painterResource(id=R.drawable.check)
-    }
-    else{
-        painter=painterResource(id=R.drawable.close)
-    }
     cuenta = operacionesPool.getOrNull(operacionesPool.lastIndex) ?: Operacion("+",0,0)
     Row(
         modifier = Modifier
