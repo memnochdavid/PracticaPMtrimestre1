@@ -31,7 +31,7 @@ fun Teclado(){
     ConstraintLayout(
         modifier = Modifier
             .padding(all = 2.dp)
-            .wrapContentSize()
+            .fillMaxWidth()
     ) {
         val (siete, ocho, nueve, ce, cuatro, cinco, seis,igual,uno,dos,tres,cero,c) = createRefs()
         val colores:ButtonColors=ButtonDefaults.buttonColors(
@@ -63,7 +63,7 @@ fun Teclado(){
                 .constrainAs(ocho) {
                     top.linkTo(parent.top)
                     start.linkTo(siete.end)
-                    end.linkTo(ocho.start)
+                    end.linkTo(nueve.start)
                     bottom.linkTo(cinco.top)
                 },
             shape = RoundedCornerShape(4.dp),

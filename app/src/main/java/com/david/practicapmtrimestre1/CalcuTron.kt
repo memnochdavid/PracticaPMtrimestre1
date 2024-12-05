@@ -99,7 +99,7 @@ class CalcuTron : ComponentActivity() {
 @Composable
 fun CalcuTronUI(settingsDataStore: SettingsDataStore) {
     val context = LocalContext.current
-    var intent= Intent(context, CalcuTronOpc::class.java)
+    var intentOpciones= Intent(context, CalcuTronOpc::class.java)
     //genera la primera y la segunda operación
     operacionesPool+=generaOperacion()
     operacionesPool+=generaOperacion()
@@ -129,13 +129,22 @@ fun CalcuTronUI(settingsDataStore: SettingsDataStore) {
                     top.linkTo(parent.top)
                     bottom.linkTo(fila1.top)
                 },
-            horizontalArrangement = Arrangement.End
+            horizontalArrangement = Arrangement.SpaceBetween
         ){
             Image(
                 modifier = Modifier
                     .size(40.dp)
                     .clickable {
-                        context.startActivity(intent)
+                        //context.startActivity(intentOpciones)
+                    },
+                contentDescription = "",
+                painter = painterResource(id=R.drawable.stats)
+            )
+            Image(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clickable {
+                        context.startActivity(intentOpciones)
                     },
                 contentDescription = "",
                 painter = painterResource(id=R.drawable.settings)
