@@ -45,6 +45,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -74,6 +75,7 @@ var operacionesPool = mutableStateListOf<Operacion>()
 var aciertos= mutableIntStateOf(0)
 var fallos= mutableIntStateOf(0)
 var intentoResultado= mutableIntStateOf(0)
+var seAcertoUltimaCuenta= mutableStateOf(false)
 
 
 
@@ -98,7 +100,9 @@ class CalcuTron : ComponentActivity() {
 fun CalcuTronUI(settingsDataStore: SettingsDataStore) {
     val context = LocalContext.current
     var intent= Intent(context, CalcuTronOpc::class.java)
-    operacionesPool+=generaOperacion()//genera la primera operación
+    //genera la primera y la segunda operación
+    operacionesPool+=generaOperacion()
+    operacionesPool+=generaOperacion()
     LaunchedEffect(Unit) {
         countdownDuration= settingsDataStore.countdownDuration
         animationEnabled = settingsDataStore.animationEnabled
@@ -167,13 +171,19 @@ fun CalcuTronUI(settingsDataStore: SettingsDataStore) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .wrapContentHeight()
                 .padding(horizontal = 10.dp)
                 .constrainAs(fila3) {
                     top.linkTo(fila2.bottom)
                     bottom.linkTo(fila4.top)
-                }
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                },
         ){
             //cuenta anterior
+            if(operacionesPool.size>4){
+                OperacionAnterior()
+            }
 
         }
         Row(
@@ -198,6 +208,7 @@ fun CalcuTronUI(settingsDataStore: SettingsDataStore) {
                 }
         ){
             //cuenta siguiente
+            OperacionSiguiente()
         }
         Row(
             modifier = Modifier
@@ -263,7 +274,7 @@ fun OperacionActual(){
         focusedTextColor= colorResource(R.color.black),
         unfocusedTextColor= colorResource(R.color.gris),
     )
-    var cuenta=operacionesPool.last()
+    var cuenta=operacionesPool[operacionesPool.lastIndex -1]
 
     LaunchedEffect(key1 = confirma) {
         if (confirma) {
@@ -273,6 +284,7 @@ fun OperacionActual(){
                 cuenta=operacionesPool.last()
                 escribe=""
                 confirma=false
+                seAcertoUltimaCuenta.value = true
                 historial+=cuenta
             }
             else{
@@ -281,12 +293,11 @@ fun OperacionActual(){
                 cuenta=operacionesPool.last()
                 escribe=""
                 confirma=false
+                seAcertoUltimaCuenta.value = false
                 historial+=cuenta
             }
         }
     }
-
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -326,7 +337,59 @@ fun OperacionActual(){
             )
         )
     }
+}
 
+@Composable
+fun OperacionAnterior(){
+    var cuenta:Operacion
+    var painter: Painter
+    if(seAcertoUltimaCuenta.value){
+        painter=painterResource(id=R.drawable.check)
+    }
+    else{
+        painter=painterResource(id=R.drawable.close)
+    }
+    cuenta = operacionesPool.getOrNull(operacionesPool.lastIndex - 2) ?: Operacion("+",0,0)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+
+    ){
+        Text(text = "${cuenta} = ${cuenta.res}", fontSize = 30.sp)
+        Image(
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .size(40.dp),
+            contentDescription = "",
+            painter = painter
+        )
+    }
+}
+
+@Composable
+fun OperacionSiguiente(){
+    var cuenta:Operacion
+    var painter: Painter
+    if(seAcertoUltimaCuenta.value){
+        painter=painterResource(id=R.drawable.check)
+    }
+    else{
+        painter=painterResource(id=R.drawable.close)
+    }
+    cuenta = operacionesPool.getOrNull(operacionesPool.lastIndex) ?: Operacion("+",0,0)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+
+    ){
+        Text(text = "${cuenta} = ", fontSize = 30.sp)
+    }
 }
 
 
