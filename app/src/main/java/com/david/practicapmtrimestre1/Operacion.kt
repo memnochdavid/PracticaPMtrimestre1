@@ -22,10 +22,10 @@ data class Operacion(
             }
             "*" -> {
                 res=a*b
-            }/*
-            ""->{//por si acaso
+            }
+            ""->{//por si acaso, en la preview cargaba un singno vacio ""
                 operador="-"
-            }*/
+            }
         }
     }
     override fun toString(): String {
