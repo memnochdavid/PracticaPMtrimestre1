@@ -100,6 +100,7 @@ class CalcuTron : ComponentActivity() {
 fun CalcuTronUI(settingsDataStore: SettingsDataStore) {
     val context = LocalContext.current
     var intentOpciones= Intent(context, CalcuTronOpc::class.java)
+    var intentResul= Intent(context, Resultados::class.java)
     //genera la primera y la segunda operación
     operacionesPool+=generaOperacion()
     operacionesPool+=generaOperacion()
@@ -135,7 +136,7 @@ fun CalcuTronUI(settingsDataStore: SettingsDataStore) {
                 modifier = Modifier
                     .size(40.dp)
                     .clickable {
-                        //context.startActivity(intentOpciones)
+                        context.startActivity(intentResul)
                     },
                 contentDescription = "",
                 painter = painterResource(id=R.drawable.stats)

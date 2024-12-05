@@ -8,5 +8,6 @@
     <string name="title_activity_memo_tron">MemoTron</string>
     <string name="title_activity_calcu_tron">CalcuTron</string>
     <string name="title_activity_calcu_tron_opc">CalcuTronOpc</string>
+    <string name="title_activity_resultados">Resultados</string>
 
 </resources>
